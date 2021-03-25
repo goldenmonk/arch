@@ -1,3 +1,4 @@
+#!/bin/bash
 # Set timezone
 timedatectl set-timezone Asia/Kolkata
 
@@ -14,7 +15,7 @@ nano /etc/hosts
 
 # Install all the essential packages 
 # broadcom-wl-dkms for lts kernel and broadcom-wl otherwise 
-pacman -S grub efibootmgr networkmanager wireless_tools broadcom-wl-dkms gnome-shell gdm libreoffice-still lvm2 base-devel gvfs ufw ntfs-3g cron gvfs-mtp
+pacman -S grub nano sudo efibootmgr networkmanager wireless_tools broadcom-wl-dkms gnome-shell gdm libreoffice-still lvm2 base-devel gvfs ufw ntfs-3g cron gvfs-mtp
 
 # Install Grub 
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
@@ -26,6 +27,13 @@ systemctl enable NetworkManager.service
 
 # Install Applications
 pacman -S grub vlc gimpp shotwell htop neofetch papirus-icon-theme gparted  rhythmbox homebank telegram-desktop  
+
+# Multilib support
+# Uncomment this section
+# [multilib]
+# Include = /etc/pacman.d/mirrorlist
+nano /etc/pacman.conf
+pacman -S multi-devel
 
 # Install Halium specific packages
 pacman -S repo 
