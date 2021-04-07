@@ -1,6 +1,35 @@
 #!/bin/bash
+
+# Open the encrypted volume
+cryptsetup luksOpen /dev/sda3 /luks
+#enter passphrase
+
+# format all the partitions
+mkfs.vfat -F32 /dev/sda1
+mkfs.ext2 /dev/sda2
+mkfs.ext4 /dev/mapper/vg-root
+mkfs.ext4 /dev/mapper/vg-home #optional
+
+# mount the root volume
+mount /dev/mapper/vg-root /mnt
+
+# Create home directory for separate home volume
+mkdir /mnt/home
+
+# Create boot and efi dirctories for efi boot
+mkdir /mnt/boot
+mkdir /mnt/boot/efi
+
+#mount home, boot and efi
+mount /dev/mapper/vg-home /mnt/home
+mount /dev/sda2 /boot
+mount /dev/sda1 /boot/efi
+
+# install using pacstrap
+pacstrap /mnt base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet
+
 # Set timezone
-timedatectl set-timezone Asia/Kolkata
+timedatectl set-timezone America/Los_Angeles
 
 # Set locale 
 nano /etc/locale.gen
