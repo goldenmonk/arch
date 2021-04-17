@@ -26,7 +26,7 @@ mount /dev/sda2 /boot
 mount /dev/sda1 /boot/efi
 
 # install using pacstrap
-pacstrap /mnt base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet
+pacstrap /mnt intel-ucode base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet
 
 # Set timezone
 timedatectl set-timezone America/Los_Angeles
