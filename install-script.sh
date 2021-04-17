@@ -25,25 +25,22 @@ mount /dev/mapper/vg-home /mnt/home
 mount /dev/sda2 /boot
 mount /dev/sda1 /boot/efi
 
-cd /mnt 
 
 # Create swap space
+cd /mnt 
 dd if=/dev/zero of=swap bs=1M count=1024
 mkswap swap
 swapon swap
 chmod 0600 swap
-
 cd
 
 # install using pacstrap
-pacstrap /mnt intel-ucode base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet lvm2 base-devel gvfs ufw ntfs-3g cron gvfs-mtp git wireless_tools broadcom-wl wpa_supplicants i3 dmenu xorg-server xorg-xinit terminator ttf-dejavu lxappearance ranger
+pacstrap /mnt intel-ucode base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet lvm2 base-devel gvfs ufw ntfs-3g cron gvfs-mtp git wireless_tools broadcom-wl wpa_supplicants i3 dmenu xorg-server xorg-xinit terminator ttf-dejavu lxappearance ranger xbacklight xorg
 
 # Create fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt
-
-
 
 #Edit /etc/mkinitcpio.conf
 #HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"
@@ -109,3 +106,5 @@ yay -S redshift-minimal i3-swallow
 echo "exec i3" > ~/.xinitrc
 echo "exec terminator" >> ~/.config/i3/config
 echo "exec redshift -P -O 2500" >> ~/.config/i3/config
+#alsa-firmware alsa-utils alsa-plugins pulseaudio-alsa pulseaudio
+ #exec --no-startup-id "pulseaudio --start
