@@ -25,14 +25,37 @@ mount /dev/mapper/vg-home /mnt/home
 mount /dev/sda2 /boot
 mount /dev/sda1 /boot/efi
 
+cd /mnt 
+
+# Create swap space
+dd if=/dev/zero of=swap bs=1M count=1024
+mkswap swap
+swapon swap
+chmod 0600 swap
+
+cd
+
 # install using pacstrap
-pacstrap /mnt intel-ucode base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet
+pacstrap /mnt intel-ucode base linux linux-firmware linux-headers nano sudo grub efibootmgr networkmanager network-manager-applet lvm2 base-devel gvfs ufw ntfs-3g cron gvfs-mtp git wireless_tools broadcom-wl wpa_supplicants i3 dmenu xorg-server xorg-xinit terminator ttf-dejavu lxappearance ranger
+
+# Create fstab
+genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+
+
+#Edit /etc/mkinitcpio.conf
+#HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"
+# mkinitcpio -p linux
 
 # Set timezone
-timedatectl set-timezone America/Los_Angeles
+#timedatectl set-timezone America/Los_Angeles
+timedatectl set-timezone Asia/Kolkata
+hwclock --systohc
 
 # Set locale 
-nano /etc/locale.gen
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo LANG=en_US.UTF-8 > /etc/locale.conf
 export LANG=en_US.UTF-8
@@ -40,29 +63,34 @@ export LANG=en_US.UTF-8
 # Set hosts
 echo myarch > /etc/hostname
 touch /etc/hosts
-nano /etc/hosts
+echo "127.0.0.1 localhost" >> /etc/hosts
+echo "::1 localhost" >> /etc/hosts
+echo "127.0.1.1 myarch" >> /etc/hosts
 
-# Install all the essential packages 
-# broadcom-wl-dkms for lts kernel and broadcom-wl otherwise 
-pacman -S grub nano sudo efibootmgr networkmanager wireless_tools broadcom-wl-dkms gnome-shell gdm libreoffice-still lvm2 base-devel gvfs ufw ntfs-3g cron gvfs-mtp
+ #nano /etc/default/grub
+#GRUB_CMDLINE_LINUX=”cryptdevice=/dev/sda3:vg-root”
 
 # Install Grub 
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # enable services
-systemctl enable gdm.service
+systemctl enable ufw.service
 systemctl enable NetworkManager.service
 
 # Install Applications
-pacman -S grub vlc gimpp shotwell htop neofetch papirus-icon-theme gparted  rhythmbox homebank telegram-desktop  
+pacman -S vlc gimp shotwell htop neofetch papirus-icon-theme gparted rhythmbox homebank telegram-desktop libreoffice-still nautilus 
 
+passwd
+#useradd -m -G wheel username
+#passwd username
 # Multilib support
 # Uncomment this section
 # [multilib]
 # Include = /etc/pacman.d/mirrorlist
-nano /etc/pacman.conf
-pacman -S multi-devel
+echo "[multilib]" >> /etc/pacman.conf
+echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+pacman -S multilib-devel
 
 # Install Halium specific packages
 pacman -S repo 
@@ -77,3 +105,7 @@ makepkg -si
 yay -S brave-bin #Brave browser
 yay -S timeshift #Backup utility
 yay -S stacer # System utility
+yay -S redshift-minimal i3-swallow 
+echo "exec i3" > ~/.xinitrc
+echo "exec terminator" >> ~/.config/i3/config
+echo "exec redshift -P -O 2500" >> ~/.config/i3/config
