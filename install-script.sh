@@ -28,10 +28,10 @@ mount /dev/sda1 /boot/efi
 
 # Create swap space
 cd /mnt 
-dd if=/dev/zero of=swap bs=1M count=1024
-mkswap swap
-swapon swap
-chmod 0600 swap
+dd if=/dev/zero of=/swap bs=1M count=1024
+mkswap /swap
+swapon /swap
+chmod 0600 /swap
 cd
 
 # install using pacstrap
@@ -39,6 +39,7 @@ pacstrap /mnt intel-ucode base linux linux-firmware linux-headers nano sudo grub
 
 # Create fstab
 genfstab -U /mnt >> /mnt/etc/fstab
+# "/swapfile none swap defaults 0 0" >> /mnt/etc/fstab
 
 arch-chroot /mnt
 
